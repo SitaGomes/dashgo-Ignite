@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import {Flex, Button, Stack, FormLabel, FormControl} from "@chakra-ui/react"
+import {Flex, Button, Stack} from "@chakra-ui/react"
 
 import {Input} from "../components/Form/input"
 
@@ -8,7 +8,7 @@ export default function SingIn() {
   return (
     <>
       <Head>
-        <title>DashGo | Home</title>
+        <title>Dashgo | Home</title>
       </Head>
 
       <Flex
