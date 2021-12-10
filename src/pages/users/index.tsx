@@ -1,5 +1,6 @@
- import { Box, Button, Checkbox, Flex, Heading, Icon, Table, Tbody, Th, Thead, Tr} from "@chakra-ui/react"
+ import { Box, Button, Checkbox, Flex, Heading, Icon, Table, Tbody, Th, Thead, Tr, useBreakpointValue} from "@chakra-ui/react"
 import Head from "next/head"
+import Link from "next/link"
 
 import { RiAddLine } from "react-icons/ri"
 
@@ -10,6 +11,11 @@ import { Title } from "../../components/Title"
 import { TableData } from "../../components/User/TableData"
 
 export default function UserList () {
+
+    const isWideScreen = useBreakpointValue({
+        base: false,
+        lg: true
+    })
 
     return(
         <Box>
@@ -35,36 +41,44 @@ export default function UserList () {
                       align="center"
                     >
                         <Title>Usuários</Title>
-
-                        <Button
-                            as="a"
-                            colorScheme={"pink"}
-                            size="sm"
-                            leftIcon={<Icon as={RiAddLine} fontSize="20"/>}
-                        >
-                            Criar novo 
-                        </Button>
+                        
+                        <Link href="/users/create" passHref>
+                            <Button
+                                as="a"
+                                colorScheme={"pink"}
+                                size="sm"
+                                leftIcon={<Icon as={RiAddLine} fontSize="20"/>}
+                            >
+                                Criar novo 
+                            </Button>
+                        </Link>
                     </Flex>
 
                     <Table colorScheme="whiteAlpha">
 
                         <Thead>
                             <Tr>
-                                <Th px="6" width="8" color="gray.300">
+                                <Th px="6" width={["6", "8"]} color="gray.300">
                                     <Checkbox colorScheme="pink"/>
                                 </Th>
                                 <Th>Usuário</Th>
-                                <Th>Data de cadastro</Th>
-                                <Th width="1"></Th>
+                                {isWideScreen &&
+                                    (
+                                        <>
+                                            <Th>Data de cadastro</Th>
+                                            <Th width="1"></Th>
+                                        </>
+                                    )
+                                }
                             </Tr>
                         </Thead>
 
                         <Tbody>
 
-                           <TableData name="Arthur Gomes" email="ansitagomes@gmail.com" data="04 de Abril, 1999" />
-                           <TableData name="Ducher Machili" email="ducherkingcv@gmail.com" data="05 de Abril, 1999" />
-                           <TableData name="P3nng Lee" email="yourworstfear@gmail.com" data="06 de Abril, 1999" />
-                           <TableData name="King Ducher cv" email="imbatman@gmail.com" data="07 de Abril, 1999" />
+                           <TableData isWideScreen={isWideScreen} name="Arthur Gomes" email="ansitagomes@gmail.com" data="04 de Abril, 1999" />
+                           <TableData isWideScreen={isWideScreen} name="Ducher Machili" email="ducherkingcv@gmail.com" data="05 de Abril, 1999" />
+                           <TableData isWideScreen={isWideScreen} name="P3nng Lee" email="yourworstfear@gmail.com" data="06 de Abril, 1999" />
+                           <TableData isWideScreen={isWideScreen} name="King Ducher cv" email="imbatman@gmail.com" data="07 de Abril, 1999" />
 
                         </Tbody>
 
