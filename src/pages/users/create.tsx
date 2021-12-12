@@ -1,14 +1,21 @@
-import {Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, VStack, } from "@chakra-ui/react"
+import {Box, Button, Divider, Flex, HStack, SimpleGrid, VStack, } from "@chakra-ui/react"
+import Head from "next/head"
 import { Input } from "../../components/Form/input"
 
 
 import { Header } from "../../components/Header"
 import { Sidebar } from "../../components/Sidebar"
+import { Title } from "../../components/Title"
 
 export default function CreateUser () {
 
     return(
         <Box>
+
+            <Head>
+                <title>Criar usuário | Dashgo</title>
+            </Head>
+
             <Header />
 
             <Flex w="100%" my="6" maxW="1480px" mx="auto" px="6">
@@ -21,7 +28,8 @@ export default function CreateUser () {
                   borderRadius="8"
                   p="8"
                 >
-                    <Heading size="lg" fontWeight="normal"> Criar usuário</Heading>
+
+                    <Title>Criar usuário</Title>
 
                     <Divider mb="6" borderColor="gray.700"/>
 
