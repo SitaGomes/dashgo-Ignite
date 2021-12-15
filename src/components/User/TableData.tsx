@@ -1,16 +1,16 @@
-import { Box, Button, Checkbox, Icon, Td, Text, Tr } from "@chakra-ui/react";
-import { RiPencilLine } from "react-icons/ri";
+import { Box, Checkbox, Td, Text, Tr } from "@chakra-ui/react";
 import { EditButton } from "./EditButton";
 
 interface TableDataProps {
     name: string,
     email: string,
-    data: string
+    data: string,
+    isWideScreen: boolean
 }
 
-export function TableData ({data, name, email}: TableDataProps) {
+export function TableData ({data, name, email, isWideScreen = true}: TableDataProps) {
     return(
-        <Tr px="6">
+        <Tr px={["2", "4", "6"]}>
             <Td>
                 <Checkbox colorScheme="pink"/>
             </Td>
@@ -20,10 +20,16 @@ export function TableData ({data, name, email}: TableDataProps) {
                     <Text fontSize="sm" color="gray.300">{email}</Text>
                 </Box>
             </Td>
-            <Td>{data}</Td>
-            <Td>
-                <EditButton />
-            </Td>
+            {isWideScreen && 
+                (    
+                    <>
+                        <Td>{data}</Td>
+                        <Td>
+                            <EditButton />
+                        </Td>
+                    </>
+                )
+            }
         </Tr>
     )
 }

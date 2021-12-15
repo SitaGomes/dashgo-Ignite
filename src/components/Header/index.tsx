@@ -1,4 +1,6 @@
-import { Flex } from "@chakra-ui/react";
+import { Button, Flex, Icon, IconButton, useBreakpointValue } from "@chakra-ui/react";
+import { RiMenuLine } from "react-icons/ri";
+import { useSidebarContext } from "../../hooks/useSidebarContext";
 
 import { Logo } from "./Logo";
 import { Notifications } from "./Notifications";
@@ -7,30 +9,48 @@ import { Search } from "./Search";
 
 export function Header() {
 
-    return(
+  const {onOpen} = useSidebarContext()
+
+  const isWideScreen = useBreakpointValue({
+    base: false,
+    lg: true
+  })
+
+  return(
+      <Flex
+        as="header"
+        w="100%"
+        h="20"
+        maxW="1480px"
+        mx="auto"
+        mt="4"
+        px="6"
+        align="center"
+      >
+        {!isWideScreen && (
+          <IconButton
+            icon={<Icon as={RiMenuLine} fontSize="32" />}
+            aria-label="Abrir Menu"
+            onClick={onOpen}
+            variant="unstyled"
+            mr="2"
+            pt="1"
+          />
+        )}
+
+        <Logo />
+
+        {isWideScreen && <Search />}
+
         <Flex
-          as="header"
-          w="100%"
-          h="20"
-          maxW="1480px"
-          mx="auto"
-          mt="4"
-          px="6"
+          ml="auto"
           align="center"
-        >
-            <Logo />
+          >
+            <Notifications />
 
-            <Search />
-
-            <Flex
-              ml="auto"
-              align="center"
-              >
-                <Notifications />
-
-                <Profile />
-            </Flex>
-
+            <Profile showProfileData={isWideScreen}/>
         </Flex>
-    )
+
+      </Flex>
+  )
 }
