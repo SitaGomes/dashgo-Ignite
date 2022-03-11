@@ -1,26 +1,33 @@
- import { Box, Button, Checkbox, Flex, Heading, Icon, Table, Tbody, Th, Thead, Tr, useBreakpointValue} from "@chakra-ui/react"
 import Head from "next/head"
 import Link from "next/link"
-import { useEffect } from "react"
+import {useQuery} from "react-query"
+
+import { api } from "../../services/axios"
 
 import { RiAddLine } from "react-icons/ri"
+import { Box, Button, Checkbox, Flex, Text, Icon, Spinner, Table, Tbody, Th, Thead, Tr, useBreakpointValue, Heading} from "@chakra-ui/react"
 
 import { Header } from "../../components/Header"
 import { Pagination } from "../../components/Pagination"
 import { Sidebar } from "../../components/Sidebar"
-import { Title } from "../../components/Title"
 import { TableData } from "../../components/User/TableData"
+import { useUsers } from "../../services/hooks/useUsers"
+
+interface User {
+    id: number,
+    name: string,
+    email: string,
+    createdAt: string,
+}
 
 export default function UserList () {
+
+    const {data, isLoading, isFetching, error} = useUsers()
 
     const isWideScreen = useBreakpointValue({
         base: false,
         lg: true
     })
-
-    useEffect(() => {
-        fetch("http://localhost:3000/api/users")
-    }, [])
 
     return(
         <Box>
@@ -45,7 +52,11 @@ export default function UserList () {
                       justify="space-between"
                       align="center"
                     >
-                        <Title>Usuários</Title>
+                        <Heading size="lg" fontWeight="normal"> 
+                            Usuários 
+
+                            {!isLoading && isFetching && <Spinner color="gray.500" ml="4" size="sm" />}
+                        </Heading>
                         
                         <Link href="/users/create" passHref>
                             <Button
@@ -59,37 +70,49 @@ export default function UserList () {
                         </Link>
                     </Flex>
 
-                    <Table colorScheme="whiteAlpha">
+                    {isLoading 
+                        ? (
+                            <Flex justify="center"> <Spinner /> </Flex>
+                        ) 
+                        : error ? (
+                            <Flex> <Text>Falha no carregamento dos usuários</Text> </Flex>
+                        ) : (
+                            <>
+                            
+                                <Table colorScheme="whiteAlpha">
 
-                        <Thead>
-                            <Tr>
-                                <Th px="6" width={["6", "8"]} color="gray.300">
-                                    <Checkbox colorScheme="pink"/>
-                                </Th>
-                                <Th>Usuário</Th>
-                                {isWideScreen &&
-                                    (
-                                        <>
-                                            <Th>Data de cadastro</Th>
-                                            <Th width="1"></Th>
-                                        </>
-                                    )
-                                }
-                            </Tr>
-                        </Thead>
+                                <Thead>
+                                    <Tr>
+                                        <Th px="6" width={["6", "8"]} color="gray.300">
+                                            <Checkbox colorScheme="pink"/>
+                                        </Th>
+                                        <Th>Usuário</Th>
+                                        {isWideScreen &&
+                                            (
+                                                <>
+                                                    <Th>Data de cadastro</Th>
+                                                    <Th width="1"></Th>
+                                                </>
+                                            )
+                                        }
+                                    </Tr>
+                                </Thead>
+        
+                                <Tbody>
 
-                        <Tbody>
+                                    {data.map((user: User) => (
 
-                           <TableData isWideScreen={isWideScreen} name="Arthur Gomes" email="ansitagomes@gmail.com" data="04 de Abril, 1999" />
-                           <TableData isWideScreen={isWideScreen} name="Ducher Machili" email="ducherkingcv@gmail.com" data="05 de Abril, 1999" />
-                           <TableData isWideScreen={isWideScreen} name="P3nng Lee" email="yourworstfear@gmail.com" data="06 de Abril, 1999" />
-                           <TableData isWideScreen={isWideScreen} name="King Ducher cv" email="imbatman@gmail.com" data="07 de Abril, 1999" />
-
-                        </Tbody>
-
-                    </Table>
-    
-                    <Pagination />
+                                        <TableData key={user.id} isWideScreen name={user.name} email={user.email} data={user.createdAt} />
+                                    ))}
+                    
+                                </Tbody>
+        
+                                </Table>
+                
+                                <Pagination />
+                            </>
+                        )
+                    }
 
                 </Box>
             
