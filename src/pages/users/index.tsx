@@ -1,8 +1,5 @@
 import Head from "next/head"
 import Link from "next/link"
-import {useQuery} from "react-query"
-
-import { api } from "../../services/axios"
 
 import { RiAddLine } from "react-icons/ri"
 import { Box, Button, Checkbox, Flex, Text, Icon, Spinner, Table, Tbody, Th, Thead, Tr, useBreakpointValue, Heading} from "@chakra-ui/react"
@@ -12,6 +9,7 @@ import { Pagination } from "../../components/Pagination"
 import { Sidebar } from "../../components/Sidebar"
 import { TableData } from "../../components/User/TableData"
 import { useUsers } from "../../services/hooks/useUsers"
+import { useState } from "react"
 
 interface User {
     id: number,
@@ -21,8 +19,9 @@ interface User {
 }
 
 export default function UserList () {
+    const [page, setPage] = useState(1)
 
-    const {data, isLoading, isFetching, error} = useUsers()
+    const {data, isLoading, isFetching, error} = useUsers(page)
 
     const isWideScreen = useBreakpointValue({
         base: false,
@@ -100,7 +99,7 @@ export default function UserList () {
         
                                 <Tbody>
 
-                                    {data.map((user: User) => (
+                                    {data.users.map((user: User) => (
 
                                         <TableData key={user.id} isWideScreen name={user.name} email={user.email} data={user.createdAt} />
                                     ))}
@@ -109,7 +108,11 @@ export default function UserList () {
         
                                 </Table>
                 
-                                <Pagination />
+                                <Pagination 
+                                    totalCountOfRegisters={data.totalCount}
+                                    currentPage={page}
+                                    onPageChange={setPage}
+                                />
                             </>
                         )
                     }

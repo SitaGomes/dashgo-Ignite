@@ -8,11 +8,21 @@ interface User {
     createdAt: string,
 }
 
+type GetUserReponse = {
+    users: User[],
+    totalCount: number
+}
+
 //? Separating the axios request from the query request
+export async function getUser(page: number): Promise<GetUserReponse> {
 
-export async function getUser(): Promise<User[]> {
+    const {data, headers} = await api.get("users", {
+        params: {
+            page
+        }
+    })
 
-    const {data} = await api.get("users")
+    const totalCount = Number(headers["x-total-count"])
 
     const users = data.users.map((user) => {
         return {
@@ -27,12 +37,15 @@ export async function getUser(): Promise<User[]> {
         }
     })
 
-    return users
+    return {
+        users,
+        totalCount
+    }
 }
 
 
-export function useUsers() {
-    return useQuery("users", getUser, {
+export function useUsers(page: number) {
+    return useQuery(["users", page], () => getUser(page), {
         staleTime: 1000 * 5, // 5 seconds
     })
 }
