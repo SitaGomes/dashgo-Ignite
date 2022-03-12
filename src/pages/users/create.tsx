@@ -11,6 +11,10 @@ import {Box, Button, Divider, Flex, HStack, SimpleGrid, VStack, } from "@chakra-
 import { Header } from "../../components/Header"
 import { Sidebar } from "../../components/Sidebar"
 import { Title } from "../../components/Title"
+import { useMutation } from "react-query";
+import { api } from "../../services/axios";
+import { queryClient } from "../../services/queryClient";
+import { useRouter } from "next/router";
 
 interface CreateUserProps {
     name: string,
@@ -29,14 +33,29 @@ const createUSerSchema = yup.object().shape({
 })
 
 export default function CreateUser () {
+    const router = useRouter()
+
+    const createUser = useMutation(async (user: CreateUserProps) => {
+        const response = await api.post('users', {
+            user: {
+                ...user,
+                created_at: new Date()
+            }
+        })
+
+    }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries("users")
+        }
+    })
 
     const {register, handleSubmit, formState} = useForm<CreateUserProps>({resolver: yupResolver(createUSerSchema)})
     const {errors} = formState
 
     const handleCreateUser: SubmitHandler<CreateUserProps> = async (values) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        
-        console.log(values)
+        createUser.mutateAsync(values)
+
+        router.push('/users')
     }
 
     

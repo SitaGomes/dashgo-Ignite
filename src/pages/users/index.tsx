@@ -1,15 +1,19 @@
+import { GetServerSideProps } from "next"
 import Head from "next/head"
-import Link from "next/link"
+import NextLink from "next/link"
+import { useState } from "react"
 
 import { RiAddLine } from "react-icons/ri"
 import { Box, Button, Checkbox, Flex, Text, Icon, Spinner, Table, Tbody, Th, Thead, Tr, useBreakpointValue, Heading} from "@chakra-ui/react"
+
+import { queryClient } from "../../services/queryClient"
+import { getUser, useUsers } from "../../services/hooks/useUsers"
+import { api } from "../../services/axios"
 
 import { Header } from "../../components/Header"
 import { Pagination } from "../../components/Pagination"
 import { Sidebar } from "../../components/Sidebar"
 import { TableData } from "../../components/User/TableData"
-import { useUsers } from "../../services/hooks/useUsers"
-import { useState } from "react"
 
 interface User {
     id: number,
@@ -18,15 +22,27 @@ interface User {
     createdAt: string,
 }
 
-export default function UserList () {
+export default function UserList ({initialUsers}) {
     const [page, setPage] = useState(1)
 
-    const {data, isLoading, isFetching, error} = useUsers(page)
+    const {data, isLoading, isFetching, error} = useUsers(page, {
+        initialData: initialUsers
+    })
 
     const isWideScreen = useBreakpointValue({
         base: false,
         lg: true
     })
+
+    async function handlePrefetchData (userId: number) {
+        await queryClient.prefetchQuery(["user", userId], async () => {
+            const response = await api.get(`users/${userId}`)
+
+            return response.data
+        }, {
+            staleTime: 1000 * 60 * 10, // 10 minutes
+        })
+    }
 
     return(
         <Box>
@@ -57,7 +73,7 @@ export default function UserList () {
                             {!isLoading && isFetching && <Spinner color="gray.500" ml="4" size="sm" />}
                         </Heading>
                         
-                        <Link href="/users/create" passHref>
+                        <NextLink href="/users/create" passHref>
                             <Button
                                 as="a"
                                 colorScheme={"pink"}
@@ -66,7 +82,7 @@ export default function UserList () {
                             >
                                 Criar novo 
                             </Button>
-                        </Link>
+                        </NextLink>
                     </Flex>
 
                     {isLoading 
@@ -100,8 +116,15 @@ export default function UserList () {
                                 <Tbody>
 
                                     {data.users.map((user: User) => (
-
-                                        <TableData key={user.id} isWideScreen name={user.name} email={user.email} data={user.createdAt} />
+                                        <TableData
+                                          key={user.id}
+                                          isWideScreen
+                                          handlePrefetchData={() => handlePrefetchData(user.id)}
+                                          id={user.id}
+                                          name={user.name}
+                                          email={user.email}
+                                          data={user.createdAt} 
+                                        />
                                     ))}
                     
                                 </Tbody>
@@ -123,4 +146,16 @@ export default function UserList () {
             
         </Box>
     )
+}
+
+
+export const getServerSideProps: GetServerSideProps = async () => {
+    
+    const {users} = await getUser(1)
+
+    return {
+        props: {
+            initialUsers: users
+        }
+    }
 }

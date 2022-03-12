@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery, UseQueryOptions } from "react-query"
 import { api } from "../axios"
 
 interface User {
@@ -44,8 +44,8 @@ export async function getUser(page: number): Promise<GetUserReponse> {
 }
 
 
-export function useUsers(page: number) {
+export function useUsers(page: number, options?: UseQueryOptions) {
     return useQuery(["users", page], () => getUser(page), {
-        staleTime: 1000 * 5, // 5 seconds
+        staleTime: 1000 * 60 * 10, // 10 minutes
     })
 }
